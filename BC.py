@@ -55,8 +55,8 @@ class BehavioralCloning(nn.Module):
         return self.forward(x)
 
 if __name__ == "__main__":
-    file_path = 'dataset10000.npy'
-    n_states = 1
+    file_path = 'datasets10000.npy'
+    n_states = 3
     n_actions = 1
     lr = 0.001
     model = BehavioralCloning(n_states, n_actions, lr)

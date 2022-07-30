@@ -3,6 +3,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
 import numpy as np
+import gym
 
 class BehavioralCloning(nn.Module):
     def __init__(self, n_states, n_actions, lr):
@@ -33,12 +34,32 @@ class BehavioralCloning(nn.Module):
         return self.forward(x)
 
 if __name__ == "__main__":
-    n_states = 1
+    n_states = 3
     n_actions = 1
     lr = 0.001
     model = BehavioralCloning(n_states, n_actions, lr)
     model.float()
     model.load_state_dict(torch.load('weight.pt'))
-    obs = np.array([0.03])
-    action = model.choose_action(obs)
-    print(action)
+
+#################### test our model #####################
+    # env = gym.make('Pendulum-v1')
+    env = gym.make('Pendulum-v1', render_mode = 'human', new_step_api = True)
+    n_games = 50
+
+    for i in range(n_games):
+        observation = env.reset()
+        # done = False
+        score = 0
+        terminated = False
+        truncated = False
+        done = terminated | truncated
+
+        while not done:
+            # env.render()
+            action = model.choose_action(observation)
+            # observation_, reward, done, info = env.step(action.detach().numpy())
+            observation_, reward, terminated, truncated, info = env.step(action.detach().numpy())
+            observation = observation_
+            score += reward
+            done = terminated | truncated
+        print('episode ', i, 'score %.1f' % score)
